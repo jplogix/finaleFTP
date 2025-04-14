@@ -20,7 +20,8 @@ const config: Config = {
   },
   app: {
     uploadDir: process.env.UPLOAD_DIR || './uploads',
-    logDir: process.env.LOG_DIR || './logs'
+    logDir: process.env.LOG_DIR || './logs',
+    healthCheckPort: parseInt(process.env.HEALTH_CHECK_PORT || '3000', 10)
   }
 };
 

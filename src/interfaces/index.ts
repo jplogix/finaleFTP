@@ -18,6 +18,7 @@ export interface DbConfig {
 export interface AppConfig {
   uploadDir: string;
   logDir: string;
+  healthCheckPort?: number;
 }
 
 export interface Config {

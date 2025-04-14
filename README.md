@@ -100,28 +100,47 @@ The application creates two tables:
 
 ## Deployment with Dokploy
 
-This application can be easily deployed using Dokploy on a VPS.
+This application can be easily deployed using Dokploy with GitHub integration and Nixpack.
 
 ### Prerequisites
 
-- A VPS with Docker and Dokploy installed
+- A VPS with Dokploy installed
+- GitHub repository for your code
+- Docker Hub account (or other container registry)
 - Domain or subdomain pointing to your VPS (recommended)
 
-### Deployment Steps
+### GitHub Setup
 
-1. Clone this repository on your local machine
-2. Copy `.env.production` to `.env` and update the values:
-   ```
-   cp .env.production .env
-   ```
-3. Edit the `.env` file with your specific configuration:
-   - Set `DOKPLOY_REGISTRY` to your Docker registry
-   - Set `PASV_URL` to your server's IP address or domain name
-   - Update credentials as needed
-4. Run the deployment script:
-   ```
-   ./deploy.sh
-   ```
+1. Push this code to your GitHub repository
+2. Set up the following secrets in your GitHub repository:
+   - `DOCKERHUB_USERNAME`: Your Docker Hub username
+   - `DOCKERHUB_TOKEN`: Your Docker Hub access token
+   - `DOKPLOY_URL`: Your Dokploy instance URL
+   - `DOKPLOY_TOKEN`: Your Dokploy API token
+   - `DOKPLOY_APP_ID`: Your Dokploy application ID
+
+### Dokploy Setup
+
+1. Log in to your Dokploy instance
+2. Create a new application
+3. Select "Docker" as the source type
+4. Enter your Docker image name: `your-username/finale-ftp:latest`
+5. Configure the ports:
+   - Port 21 for FTP
+   - Port 3000 for health checks
+   - Port range 10000-10100 for passive FTP
+6. Set up environment variables as defined in `.env.production`
+7. Configure health checks to use the `/health` endpoint
+8. Set up the PostgreSQL database dependency
+
+### Deployment Process
+
+When you push to your GitHub repository:
+
+1. GitHub Actions will build the Docker image
+2. The image will be pushed to Docker Hub
+3. Dokploy will be notified to deploy the new image
+4. Dokploy will pull the image and deploy it with zero downtime
 
 ### Manual Deployment
 
@@ -129,12 +148,13 @@ If you prefer to deploy manually:
 
 1. Build the Docker image:
    ```
-   docker build -t finale-ftp .
+   docker build -t your-username/finale-ftp:latest .
    ```
-2. Run the containers using docker-compose:
+2. Push the image to Docker Hub:
    ```
-   docker-compose up -d
+   docker push your-username/finale-ftp:latest
    ```
+3. Trigger a deployment in Dokploy through the UI or API
 
 ### Important Notes for FTP Deployment
 

@@ -1,0 +1,122 @@
+{
+  "name": "finale-ftp",
+  "description": "FTP server for Finale Inventory exports",
+  "sourceType": "docker",
+  "dockerImage": "your-dockerhub-username/finale-ftp:latest",
+  "buildType": "dockerfile",
+  "ports": [
+    {
+      "container": 21,
+      "host": 21,
+      "protocol": "tcp"
+    },
+    {
+      "container": 3000,
+      "host": 3000,
+      "protocol": "tcp"
+    }
+  ],
+  "portRange": {
+    "start": 10000,
+    "end": 10100
+  },
+  "volumes": [
+    {
+      "host": "finale_uploads",
+      "container": "/app/uploads"
+    },
+    {
+      "host": "finale_logs",
+      "container": "/app/logs"
+    }
+  ],
+  "env": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "FTP_PORT",
+      "value": "21"
+    },
+    {
+      "key": "FTP_USER",
+      "value": "finale"
+    },
+    {
+      "key": "FTP_PASSWORD",
+      "value": "inventory123"
+    },
+    {
+      "key": "FTP_PASSIVE_PORT_START",
+      "value": "10000"
+    },
+    {
+      "key": "FTP_PASSIVE_PORT_END",
+      "value": "10100"
+    },
+    {
+      "key": "PASV_URL",
+      "value": "your-server-ip-or-domain"
+    },
+    {
+      "key": "DB_HOST",
+      "value": "postgres"
+    },
+    {
+      "key": "DB_PORT",
+      "value": "5432"
+    },
+    {
+      "key": "DB_NAME",
+      "value": "finale_inventory"
+    },
+    {
+      "key": "DB_USER",
+      "value": "postgres"
+    },
+    {
+      "key": "DB_PASSWORD",
+      "value": "postgres"
+    },
+    {
+      "key": "UPLOAD_DIR",
+      "value": "/app/uploads"
+    },
+    {
+      "key": "LOG_DIR",
+      "value": "/app/logs"
+    },
+    {
+      "key": "HEALTH_CHECK_PORT",
+      "value": "3000"
+    }
+  ],
+  "healthCheck": {
+    "test": ["CMD", "curl", "-f", "http://localhost:3000/health"],
+    "interval": 30000000000,
+    "timeout": 10000000000,
+    "startPeriod": 30000000000,
+    "retries": 3
+  },
+  "updateConfig": {
+    "parallelism": 1,
+    "delay": 10000000000,
+    "failureAction": "rollback",
+    "order": "start-first"
+  },
+  "resources": {
+    "limits": {
+      "memory": "512M",
+      "cpu": 0.5
+    }
+  },
+  "dependencies": [
+    {
+      "name": "postgres",
+      "type": "database",
+      "databaseType": "postgres",
+      "version": "14"
+    }
+  ]
+}
