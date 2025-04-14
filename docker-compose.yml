@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  finale-ftp:
+    build: .
+    container_name: finale-ftp
+    restart: unless-stopped
+    ports:
+      - "21:21"
+      - "10000-10100:10000-10100"
+    environment:
+      - NODE_ENV=production
+      - FTP_PORT=21
+      - FTP_USER=${FTP_USER:-finale}
+      - FTP_PASSWORD=${FTP_PASSWORD:-inventory123}
+      - FTP_PASSIVE_PORT_START=10000
+      - FTP_PASSIVE_PORT_END=10100
+      - PASV_URL=${PASV_URL:-127.0.0.1}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-finale_inventory}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - UPLOAD_DIR=/app/uploads
+      - LOG_DIR=/app/logs
+    volumes:
+      - finale_uploads:/app/uploads
+      - finale_logs:/app/logs
+    depends_on:
+      - postgres
+    networks:
+      - finale-network
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: finale-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_NAME:-finale_inventory}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - finale-network
+
+volumes:
+  finale_uploads:
+  finale_logs:
+  postgres_data:
+
+networks:
+  finale-network:
+    driver: bridge

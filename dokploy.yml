@@ -1,0 +1,62 @@
+version: '1'
+
+app:
+  name: finale-ftp
+  description: FTP server for Finale Inventory exports
+
+services:
+  finale-ftp:
+    image: ${DOKPLOY_REGISTRY}/finale-ftp:${DOKPLOY_TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "21:21"
+      - "10000-10100:10000-10100"
+    environment:
+      - NODE_ENV=production
+      - FTP_PORT=21
+      - FTP_USER=${FTP_USER}
+      - FTP_PASSWORD=${FTP_PASSWORD}
+      - FTP_PASSIVE_PORT_START=10000
+      - FTP_PASSIVE_PORT_END=10100
+      - PASV_URL=${PASV_URL}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - UPLOAD_DIR=/app/uploads
+      - LOG_DIR=/app/logs
+    volumes:
+      - finale_uploads:/app/uploads
+      - finale_logs:/app/logs
+    depends_on:
+      - postgres
+    networks:
+      - finale-network
+
+  postgres:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - finale-network
+
+volumes:
+  finale_uploads:
+    external: false
+  finale_logs:
+    external: false
+  postgres_data:
+    external: false
+
+networks:
+  finale-network:
+    driver: bridge

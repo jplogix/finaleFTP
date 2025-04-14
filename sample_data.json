@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ITEM001",
+    "sku": "SKU001",
+    "name": "Test Product 1",
+    "description": "This is a test product",
+    "quantity": 100,
+    "location": "Warehouse A",
+    "category": "Electronics",
+    "supplier": "Supplier A",
+    "costPrice": 10.50,
+    "sellingPrice": 19.99
+  },
+  {
+    "id": "ITEM002",
+    "sku": "SKU002",
+    "name": "Test Product 2",
+    "description": "Another test product",
+    "quantity": 50,
+    "location": "Warehouse B",
+    "category": "Accessories",
+    "supplier": "Supplier B",
+    "costPrice": 5.25,
+    "sellingPrice": 12.99
+  }
+]
